@@ -5,7 +5,7 @@ import corner_detector as corn
 videoname = input("enter input")
 try:
 	videoname = int(videoname)
-	cap = cv2.VideoCapture(0)
+	cap = cv2.VideoCapture(videoname)
 except:
 	cap = cv2.VideoCapture(videoname)
 if cap.isOpened():
