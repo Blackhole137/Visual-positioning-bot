@@ -15,6 +15,7 @@ if cap.isOpened():
 while cap.isOpened():
     ret, image = cap.read()
     if ret:
+        image = np.float32(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
         corn1.image = image 
         cv2.imshow("image", corn1.updateanddisplay())
         print(ret, image)
