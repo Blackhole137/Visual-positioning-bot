@@ -13,11 +13,10 @@ class Corner_detector():
         self.image = image
         self.detectortype = detectortype
     def update(self, image=None):
-        gray = np.float32(cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY))
         if self.detectortype == "Harris":
-            self.corners = cv2.cornerHarris(gray, 3, 3, 0, 1)
+            self.corners = cv2.cornerHarris(image, 3, 3, 0, 1)
         elif self.detectortype == "Shi-Tomasi":
-            self.corners = cv2.goodFeaturesToTrack(gray, 3, 3, 0, 1)
+            self.corners = cv2.goodFeaturesToTrack(image, 3, 3, 0, 1)
         else:
             raise Unknown_algoryth_error
         return self.corners
@@ -25,6 +24,7 @@ class Corner_detector():
         dst = self.update(image=self.image)
         self.image[dst>0.01*dst.max()] = [0, 0, 255]
         return self.image
+
 
 
 
