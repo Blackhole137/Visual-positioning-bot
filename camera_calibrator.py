@@ -30,7 +30,7 @@ class Calibrator():
 			self.calibrated = True
 			return mtx, dist
 	def undistort(self, image=self.image, mtx=self.mtx, dist=self.dist):
-                if dist == None or mtx == None or image = None:
+                if dist == None or mtx == None or image == None:
                         raise Missing_calibration_data_error
 		h,  w = image.shape[:2]
 		newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
@@ -38,3 +38,5 @@ class Calibrator():
 		x,y,w,h = roi
 		dst = dst[y:y+h, x:x+w]
 		return image
+
+
