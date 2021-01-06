@@ -22,7 +22,7 @@ class Corner_detector():
         return self.corners
     def updateanddisplay(self):
         dst = self.update(image=self.image)
-        self.image[dst>0.01*dst.max()] = [0, 0, 255]
+        self.image[dst>0.01*dst.max()] = 0
         return self.image
 
 
