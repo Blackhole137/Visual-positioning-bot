@@ -2,8 +2,11 @@ import sys
 import cv2
 #import glob
 import numpy as np
+class Missing_calibration_data_error(Exception):
+        def __init__():
+                pass
 class Calibrator():
-	def __init__(self, image, criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)):
+	def __init__(self, image, criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001), calibrated = False):
 		self.criteria = criteria
 		self.objpoints = []
 		self.imgpoints = []
@@ -12,6 +15,7 @@ class Calibrator():
 		self.image = image
 		self.mtx = None
 		self.dist = None
+		self.calibrated = calibrated
 	def calibrate(self, image):
 		gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 		ret, corners = cv2.findChessboardCorners(gray, (7,6),None)
@@ -23,8 +27,11 @@ class Calibrator():
 			ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
 			self.mtx = mtx
 			self.dist = dist
+			self.calibrated = True
 			return mtx, dist
-	def undistort(self, image, mtx, dist):		
+	def undistort(self, image=self.image, mtx=self.mtx, dist=self.dist):
+                if dist == None or mtx == None or image = None:
+                        raise Missing_calibration_data_error
 		h,  w = image.shape[:2]
 		newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
 		dst = cv2.undistort(image, mtx, dist, None, newcameramtx)
