@@ -29,14 +29,13 @@ class Calibrator():
 	    self.dist = dist
 	    self.calibrated = True
 	    return mtx, dist
-	def undistort(self, image=self.image, mtx=self.mtx, dist=self.dist):
-            if dist == None or mtx == None or image == None:
-                raise Missing_calibration_data_error
+    def undistort(self, image=self.image, mtx=self.mtx, dist=self.dist):
+        if dist == None or mtx == None or image == None:
+            raise Missing_calibration_data_error
 	    h,  w = image.shape[:2]
             newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
 	    dst = cv2.undistort(image, mtx, dist, None, newcameramtx)
 	    x,y,w,h = roi
 	    dst = dst[y:y+h, x:x+w]
 	    return image
-
 
