@@ -6,7 +6,7 @@ class Missing_calibration_data_error(Exception):
     def __init__():
         pass
 class Calibrator():
-    def __init__(self, image, criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001), calibrated = False):
+    def __init__(self, image, camera_data, criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001), calibrated = False):
 	self.criteria = criteria
 	self.objpoints = []
 	self.imgpoints = []
@@ -16,6 +16,10 @@ class Calibrator():
 	self.mtx = None
 	self.dist = None
 	self.calibrated = calibrated
+	self.pixelsize = camera_data["pixelsize"]
+    	self.matrixsize = camera_data["matrixsize"]
+    	self.baseline = camera_data["baseline"]
+    	self.lens_distance = camera_data["lens_distance"]
     def calibrate(self, image):
     	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     	ret, corners = cv2.findChessboardCorners(gray, (7,6),None)
@@ -38,4 +42,9 @@ class Calibrator():
 	    x,y,w,h = roi
 	    dst = dst[y:y+h, x:x+w]
 	    return image
+    def calculate_point_relative_position(self, point_location2d):
+	angle = self.baseline/(point_location2d[left][x]-point_location2d[right][x])
+	x = angle * (point_location2d[left][x]-self.matrixsize[0]/2)
+	y = angle * (point_location2d[left][y]-self.matrixsize[1]/2)
+	z = self.lens_distance * (1-angle/self.pixelsize)
 
