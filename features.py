@@ -17,6 +17,9 @@ class Corner_detector():
             self.corners = cv2.cornerHarris(image, 3, 3, 0, 1)
         elif self.detectortype == "Shi-Tomasi":
             self.corners = cv2.goodFeaturesToTrack(image, 3, 3, 0, 1)
+        elif self.detectortype == "SIFT":
+            sift = cv2.SIFT_create()
+            kp, corners = sift.detectAndCompute(image,None)
         else:
             raise Unknown_algoryth_error
         return self.corners
@@ -24,9 +27,3 @@ class Corner_detector():
         dst = self.update(image=self.image)
         self.image[dst>0.01*dst.max()] = 0
         return self.image
-
-
-
-
-
-
