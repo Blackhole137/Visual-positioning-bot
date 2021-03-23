@@ -1,8 +1,8 @@
 import sys
 import cv2
 import numpy as np
-import corner_detector as corn
-import camera_calibrator as cali
+import features as corn
+import camera as cali
 #videoname = input("enter input")
 videoname = 0
 try:
