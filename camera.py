@@ -2,6 +2,11 @@ import sys
 import cv2
 #import glob
 import numpy as np
+from scipy.spatial.transform import *
+cv2.ocl.setUseOpenCL(False)
+cv2.setUseOptimized(True)
+def vectortrasform(vector, euler_rotator=[0,0,0], cartesian_translator=[0,0,0]):
+    r_app = from_euler('xyz', euler_rotator)
 class Missing_calibration_data_error(Exception):
     def __init__():
         pass
@@ -21,7 +26,9 @@ class Calibrator():
         self.baseline = camera_data["baseline"]
         self.lens_distance = camera_data["lens_distance"]
     def calibrate(self, image):
-        gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        gray = image
+        #gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        gray = np.uint8(image)
         ret, corners = cv2.findChessboardCorners(gray, (7,6),None)
         if ret == True:
             self.objpoints.append(self.objp)
@@ -43,26 +50,13 @@ class Calibrator():
         dst = dst[y:y+h, x:x+w]
         return image
     def calculate_point_relative_position(self, point_location2d):
-        angle = self.baseline/(point_location2d[left][x]-point_location2d[right][x])
-        x = angle * (point_location2d[left][x]-self.matrixsize[0]/2)
-        y = angle * (point_location2d[left][y]-self.matrixsize[1]/2)
-        z = self.lens_distance * (1-angle/self.pixelsize)
-        return [x, y, z]
-
-            return mtx, dist
-    def undistort(self, image, mtx, dist):
-        if dist == None or mtx == None or image == None:
-            raise Missing_calibration_data_error
-            h,  w = image.shape[:2]
-        newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
-        dst = cv2.undistort(image, mtx, dist, None, newcameramtx)
-        x,y,w,h = roi
-        dst = dst[y:y+h, x:x+w]
-        return image
-    def calculate_point_relative_position(self, point_location2d):
-        angle = self.baseline/(point_location2d[left][x]-point_location2d[right][x])
-        x = angle * (point_location2d[left][x]-self.matrixsize[0]/2)
-        y = angle * (point_location2d[left][y]-self.matrixsize[1]/2)
-        z = self.lens_distance * (1-angle/self.pixelsize)
-
+        difference = (point_location2d[0][0]-point_location2d[1][0])
+        if difference > 0.01:
+            angle = self.baseline/difference
+            x = angle * (point_location2d[0][0]-self.matrixsize[0]/2)
+            y = angle * (point_location2d[0][1]-self.matrixsize[1]/2)
+            z = self.lens_distance * (1-angle/self.pixelsize)
+            return np.array([x, y, z])
+        else:
+            return np.array([])
 
